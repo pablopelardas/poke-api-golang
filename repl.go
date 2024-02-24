@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"github.com/pablopelardas/poke-api-golang/internal/api"
 )
 
 func startRepl() {
@@ -48,6 +50,7 @@ type cliCommand struct {
 }
 
 type Config struct {
+	apiClient api.Client
 	NextPage string
 	PrevPage string
 }
