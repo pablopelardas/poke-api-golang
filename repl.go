@@ -7,12 +7,8 @@ import (
 	"github.com/pablopelardas/poke-api-golang/internal/api"
 )
 
-func startRepl() {
+func startRepl(config *Config) {
 	scanner := *NewScanner()
-	config := &Config{
-		NextPage: "",
-		PrevPage: "",
-	}
 	defer scanner.Close()
 
 	for {
@@ -25,7 +21,7 @@ func startRepl() {
 		commandName := words[0]
 		command, exists := getCommands()[commandName]
 		if exists {
-			err := command.callback(config)
+			err := command.callback(config, words[1:])
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -46,13 +42,14 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(x *Config) error
+	callback    func(x *Config, args []string) error
 }
 
 type Config struct {
 	apiClient api.Client
-	NextPage string
-	PrevPage string
+	pokedex  map[string]api.Pokemon
+	NextPage *string
+	PrevPage *string
 }
 
 func getCommands() map[string]cliCommand {
@@ -76,6 +73,26 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the previous page of the map",
 			callback:    commandMapB,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Explore a location",
+			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a pokemon",
+			callback:    commandCatch,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Displays the pokedex",
+			callback:    commandPokedex,
+		},
+		"inspect":{
+			name:        "inspect",
+			description: "Inspect a pokemon",
+			callback:    commandInspect,
 		},
 	}
 }
